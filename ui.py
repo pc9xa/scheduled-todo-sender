@@ -3,7 +3,7 @@ import streamlit as st
 import json
 
 # - CONSTANTS -----------------------------------------------------------------
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 # -- Initialize session state -------------------------------------------------
 if "to_do_list" not in st.session_state:
@@ -47,7 +47,6 @@ def clear_tasks():
         json.dump(st.session_state["to_do_list"], tf)
 
 def get_list_for_message():
-
     return st.session_state["send_list"]
 
 # - CSS ----------------------------------------------------------------------
@@ -139,11 +138,8 @@ if DEBUG_MODE:
     # for k in st.session_state.keys():
     #     del st.session_state[k]
 
-    # Enable to check the converted string version of the list
-    get_list_for_message()
-
     # Show session state
-    "session state: ", st.session_state
+    "[SHOW] Session state: ", st.session_state
 
 # - DEV NOTES FOR IMPROVEMENT -------------------------------------------------
 # (1) Add the task when I hit enter after typing inside text input, instead of
