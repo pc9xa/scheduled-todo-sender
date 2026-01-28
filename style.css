@@ -1,0 +1,70 @@
+:root {
+    --main-bg-color: #FDFFFC;
+    --vanilla-custard: #F7F3C6;
+    --ocean-mist: #4EA699;
+    --space-indigo: #392F5A;
+    --wisteria-blue: #8B95C9;
+    --gray: #D9D9D9
+}
+
+.stApp {
+    background-color: var(--main-bg-color);
+    border-color: var(--space-indigo);
+}
+
+.st-key-title {
+    background-color: var(--main-bg-color);
+    color: var(--space-indigo);
+    border: 1px solid var(--space-indigo);
+}
+
+.st-key-new_task_k {
+    color: var(--space-indigo);
+    background-color: var(--main-bg-color);
+}
+
+.st-key-add_btn button {
+    background-color: var(--wisteria-blue);
+    color: white;
+}
+
+.st-key-add_btn button:disabled {
+    background-color: var(--main-bg-color);
+    color: var(--gray);
+    border-color: var(--gray);
+}
+
+.st-key-add_btn button:hover {
+    background-color: var(--space-indigo);
+    color: white;
+}
+
+.st-key-clear_btn button {
+    background-color: var(--wisteria-blue);
+    color: white;
+}
+
+.st-key-clear_btn button:disabled {
+    background-color: var(--main-bg-color);
+    color: var(--gray);
+    border-color: var(--gray);
+}
+
+.st-key-clear_btn button:hover {
+    background-color: var(--space-indigo);
+    color: white;
+}
+
+.st-key-task_list {
+    border: 1px solid var(--space-indigo);
+}
+
+.st-key-task_list :not(:first-child) {
+    color: var(--space-indigo);
+    border-radius: 7px;
+}
+
+.st-key-task_list :not(:first-child) button {
+    color: var(--space-indigo);
+    border: 0;
+}
