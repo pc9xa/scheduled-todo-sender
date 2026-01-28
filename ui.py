@@ -9,9 +9,6 @@ DEBUG_MODE = False
 if "to_do_list" not in st.session_state:
     st.session_state["to_do_list"] = []
 
-if "send_list" not in st.session_state:
-    st.session_state["send_list"] = ""
-
 if "clear_btn_disabled" not in st.session_state:
     st.session_state["clear_btn_disabled"] = False
 
@@ -45,9 +42,6 @@ def clear_tasks():
 
     with open("tasks.json", "w") as tf:
         json.dump(st.session_state["to_do_list"], tf)
-
-def get_list_for_message():
-    return st.session_state["send_list"]
 
 # - CSS ----------------------------------------------------------------------
 with open("style.css") as style:
@@ -105,12 +99,7 @@ with col31:
                                 json.dump(st.session_state["to_do_list"],
                                           task_file)
                             st.rerun()
-            # - Saving the list in a string message
-            today = datetime.now(tz=mnl_tz)
-            header = f"{today.strftime("%B %d, %Y")} - {today.strftime("%A")}:\n"
-            bulleted_list = [f"• {t}\n" for t in
-                             st.session_state["to_do_list"]]
-            st.session_state["send_list"] = header + "".join(bulleted_list)
+
 with col32:
     if not st.session_state["to_do_list"]:
         st.session_state["clear_btn_disabled"] = True
