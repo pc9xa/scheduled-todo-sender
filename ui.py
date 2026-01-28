@@ -1,9 +1,12 @@
 from datetime import datetime, timezone, timedelta
+from pathlib import Path
 import streamlit as st
 import json
 
 # - CONSTANTS -----------------------------------------------------------------
 DEBUG_MODE = False
+BASEDIR = Path(__file__).resolve().parent
+tasks_path = BASEDIR / "tasks.json"
 
 # -- Initialize session state -------------------------------------------------
 if "to_do_list" not in st.session_state:
@@ -22,7 +25,7 @@ st.session_state["display_date"] = \
     f"{tomorrow.strftime("%B %d, %Y")} - {tomorrow.strftime("%A")}"
 
 # - Read tasks from json file
-with open("tasks.json", "r") as task_file:
+with open(tasks_path, "r") as task_file:
     st.session_state["to_do_list"] = json.load(task_file)
 
 # - Callbacks & Functions -----------------------------------------------------
@@ -33,14 +36,14 @@ def add_task():
         st.session_state["save_btn_disabled"] = False
         st.session_state.new_task_k = ""
 
-        with open("tasks.json", "w") as tf:
+        with open(tasks_path, "w") as tf:
             json.dump(st.session_state["to_do_list"], tf)
 
 def clear_tasks():
     while st.session_state["to_do_list"]:
         st.session_state["to_do_list"].pop()
 
-    with open("tasks.json", "w") as tf:
+    with open(tasks_path, "w") as tf:
         json.dump(st.session_state["to_do_list"], tf)
 
 # - CSS ----------------------------------------------------------------------

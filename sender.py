@@ -1,7 +1,12 @@
 import os, json
+from pathlib import Path
 from dotenv import load_dotenv
 from twilio.rest import Client
 from datetime import datetime, timezone, timedelta
+
+# - CONSTANTS -----------------------------------------------------------------
+BASEDIR = Path(__file__).resolve().parent
+tasks_path = BASEDIR / "tasks.json"
 
 # - ENVIRONMENT VARIABLES -----------------------------------------------------
 load_dotenv()
@@ -15,7 +20,7 @@ mnl_tz = timezone(timedelta(hours=8), name="Asia/Manila")
 today = datetime.now(tz=mnl_tz)
 header = f"{today.strftime("%B %d, %Y")} - {today.strftime("%A")}:\n"
 
-with open("tasks.json", "r") as task_file:
+with open(tasks_path, "r") as task_file:
     to_do_list = json.load(task_file)
 
 bulleted_list = [f"• {t}\n" for t in to_do_list]
