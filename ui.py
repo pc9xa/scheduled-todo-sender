@@ -1,22 +1,24 @@
-from datetime import datetime, timezone, timedelta
-from pathlib import Path
 import streamlit as st
-import json
+from upstash_redis import Redis
+from datetime import datetime, timezone, timedelta
 
 # - CONSTANTS -----------------------------------------------------------------
 DEBUG_MODE = False
-BASEDIR = Path(__file__).resolve().parent
-tasks_path = BASEDIR / "tasks.json"
+TASK_DB = "Task_list"
 
-# -- Initialize session state -------------------------------------------------
-if "to_do_list" not in st.session_state:
-    st.session_state["to_do_list"] = []
-
+# -- Initialization -----------------------------------------------------------
+# - Session state
 if "clear_btn_disabled" not in st.session_state:
     st.session_state["clear_btn_disabled"] = False
 
 if "display_date" not in st.session_state:
     st.session_state["display_date"] = ""
+
+# - Redis connection
+redis = Redis(
+    url=st.secrets["UPSTASH_URL"],
+    token=st.secrets["UPSTASH_TOKEN"]
+)
 
 # - Date handling -------------------------------------------------------------
 mnl_tz = timezone(timedelta(hours=8), name="Asia/Manila")
@@ -24,27 +26,14 @@ tomorrow = datetime.now(tz=mnl_tz) + timedelta(days=1)
 st.session_state["display_date"] = \
     f"{tomorrow.strftime("%B %d, %Y")} - {tomorrow.strftime("%A")}"
 
-# - Read tasks from json file
-with open(tasks_path, "r") as task_file:
-    st.session_state["to_do_list"] = json.load(task_file)
-
 # - Callbacks & Functions -----------------------------------------------------
 def add_task():
     if new_task:
-        st.session_state["to_do_list"].append(new_task)
-        st.session_state["save_btn_lbl"] = "Save"
-        st.session_state["save_btn_disabled"] = False
+        redis.rpush(TASK_DB, new_task)
         st.session_state.new_task_k = ""
 
-        with open(tasks_path, "w") as tf:
-            json.dump(st.session_state["to_do_list"], tf)
-
 def clear_tasks():
-    while st.session_state["to_do_list"]:
-        st.session_state["to_do_list"].pop()
-
-    with open(tasks_path, "w") as tf:
-        json.dump(st.session_state["to_do_list"], tf)
+    redis.delete(TASK_DB)
 
 # - CSS ----------------------------------------------------------------------
 with open("style.css") as style:
@@ -84,10 +73,10 @@ with col31:
             border=True,
             key="task_list",
             height="stretch"):
-        if not st.session_state["to_do_list"]:
+        if not redis.exists(TASK_DB):
             st.caption("*No tasks for tomorrow 😎*")
         else:
-            for i, task in enumerate(st.session_state["to_do_list"]):
+            for i, task in enumerate(redis.lrange(TASK_DB, 0, -1)):
                 with st.container(
                         key=f"task_{i}",
                         border=True,
@@ -97,17 +86,15 @@ with col31:
                         st.write(task)
                     with col212:
                         if st.button("✖", key=f"delbtn_{i}"):
-                            st.session_state["to_do_list"].pop(i)
-                            with open("tasks.json", "w") as task_file:
-                                json.dump(st.session_state["to_do_list"],
-                                          task_file)
+                            pop_this = redis.lindex(TASK_DB, i)
+                            redis.lrem(TASK_DB, 1, pop_this)
                             st.rerun()
 
 with col32:
-    if not st.session_state["to_do_list"]:
-        st.session_state["clear_btn_disabled"] = True
-    else:
+    if redis.exists(TASK_DB):
         st.session_state["clear_btn_disabled"] = False
+    else:
+        st.session_state["clear_btn_disabled"] = True
     st.button(
         label="Clear",
         disabled=st.session_state["clear_btn_disabled"],
@@ -116,8 +103,6 @@ with col32:
         width="stretch",
         help="Clear all tasks."
     )
-
-
 
 # - Footer
 st.space("large")
@@ -138,3 +123,5 @@ if DEBUG_MODE:
 #     having to click outside the field, then clicking the Add button
 # (2) If possible, make each task card draggable to enable the user to change
 #     the order of the tasks in the list.
+# (3) User is able to mark a task as important. This adds an "urgent" emoji to
+#     that item in the list when sent as a message.
