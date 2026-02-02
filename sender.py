@@ -2,11 +2,12 @@ import os, json
 from pathlib import Path
 from dotenv import load_dotenv
 from twilio.rest import Client
+from upstash_redis import Redis
 from datetime import datetime, timezone, timedelta
 
 # - CONSTANTS -----------------------------------------------------------------
+TASK_DB = "Task_list"
 BASEDIR = Path(__file__).resolve().parent
-tasks_path = BASEDIR / "tasks.json"
 env_path =  BASEDIR / ".env"
 
 # - ENVIRONMENT VARIABLES -----------------------------------------------------
@@ -17,15 +18,21 @@ WA_VIRTUAL_NUMBER = os.getenv("WHATSAPP_VIRTUAL_NUMBER")
 MY_NUMBER = os.getenv("MY_PHONE_NUMBER")
 
 # - MESSAGE CREATION ----------------------------------------------------------
+# - Date & time
 mnl_tz = timezone(timedelta(hours=8), name="Asia/Manila")
 today = datetime.now(tz=mnl_tz)
 header = f"{today.strftime("%B %d, %Y")} - {today.strftime("%A")}:\n"
 
-with open(tasks_path, "r") as task_file:
-    to_do_list = json.load(task_file)
+# - Redis connection
+redis = Redis(
+    url=os.getenv("UPSTASH_URL"),
+    token=os.getenv("UPSTASH_TOKEN")
+)
+to_do_list = []
+for task in redis.lrange(TASK_DB, 0, -1):
+    to_do_list.append(f"• {task}\n")
 
-bulleted_list = [f"• {t}\n" for t in to_do_list]
-list_as_message = header + "".join(bulleted_list)
+list_as_message = header + "".join(to_do_list)
 
 # - TWILIO API ----------------------------------------------------------------
 client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
