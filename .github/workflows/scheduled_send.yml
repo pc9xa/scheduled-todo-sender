@@ -2,7 +2,7 @@ name: Scheduled SMS Workflow
 
 on:
   schedule: 
-    - cron: "0 22 * * *"
+    - cron: "40 4 * * *"
   workflow_dispatch: 
 
 jobs:
