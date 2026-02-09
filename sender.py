@@ -1,4 +1,4 @@
-import os, json
+import os
 from pathlib import Path
 from dotenv import load_dotenv
 from twilio.rest import Client
@@ -21,7 +21,7 @@ MY_NUMBER = os.getenv("MY_PHONE_NUMBER")
 # - Date & time
 mnl_tz = timezone(timedelta(hours=8), name="Asia/Manila")
 today = datetime.now(tz=mnl_tz)
-header = f"{today.strftime("%B %d, %Y")} - {today.strftime("%A")}:\n"
+header = f"{today.strftime('%B %d, %Y')} - {today.strftime('%A')}:\n"
 
 # - Redis connection
 redis = Redis(

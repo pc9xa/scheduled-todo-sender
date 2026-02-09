@@ -24,7 +24,7 @@ redis = Redis(
 mnl_tz = timezone(timedelta(hours=8), name="Asia/Manila")
 tomorrow = datetime.now(tz=mnl_tz) + timedelta(days=1)
 st.session_state["display_date"] = \
-    f"{tomorrow.strftime("%B %d, %Y")} - {tomorrow.strftime("%A")}"
+    f"{tomorrow.strftime('%B %d, %Y')} - {tomorrow.strftime('%A')}"
 
 # - Callbacks & Functions -----------------------------------------------------
 def add_task():
