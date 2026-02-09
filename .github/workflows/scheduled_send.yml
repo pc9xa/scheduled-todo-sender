@@ -22,7 +22,7 @@ jobs:
         env:
           TWILIO_ACCT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-          WA_VIRTUAL_NUMBER: ${{ secrets.WHATSAPP_VIRTUAL_NUMBER }}
-          MY_NUMBER: ${{ secrets.MY_PHONE_NUMBER }}
+          WHATSAPP_VIRTUAL_NUMBER: ${{ secrets.WHATSAPP_VIRTUAL_NUMBER }}
+          MY_PHONE_NUMBER: ${{ secrets.MY_PHONE_NUMBER }}
           UPSTASH_URL: ${{ secrets.UPSTASH_URL }}
           UPSTASH_TOKEN: ${{ secrets.UPSTASH_TOKEN }}
